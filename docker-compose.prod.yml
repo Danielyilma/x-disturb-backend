@@ -14,6 +14,8 @@ services:
       - ENVIRONMENT=production
     volumes:
       - ./service-account.json:/app/service-account.json:ro   # read-only mount
+    networks:
+      - x-disturb
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
       interval: 30s
@@ -25,3 +27,7 @@ services:
       options:
         max-size: "10m"
         max-file: "5"
+
+networks:
+  x-disturb:
+    driver: bridge

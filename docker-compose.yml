@@ -7,8 +7,14 @@ services:
       - "8000:8000"
     volumes:
       - .:/app                          # mount local code for hot-reload
+    networks:
+      - x-disturb
     env_file:
       - .env
     environment:
       - ENVIRONMENT=development
     restart: unless-stopped
+  
+networks:
+  x-disturb:
+    driver: bridge
