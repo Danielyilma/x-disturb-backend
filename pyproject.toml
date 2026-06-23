@@ -1,0 +1,61 @@
+[project]
+name = "x-disturb-backend"
+version = "0.1.0"
+description = "x-disturb FastAPI backend — Firebase edition"
+requires-python = ">=3.12"
+
+dependencies = [
+    # Web framework
+    "fastapi[standard]>=0.115.0",
+    "uvicorn[standard]>=0.34.0",
+
+    # Validation
+    "pydantic[email]>=2.12.0",
+    "python-dotenv>=1.1.0",
+
+    # Firebase (Firestore + Storage)
+    "firebase-admin>=6.7.0",
+    "google-cloud-firestore>=2.20.0",
+
+    # Auth
+    "PyJWT>=2.12.0",
+    "bcrypt>=5.0.0",
+
+    # HTTP clients
+    "httpx>=0.28.0",
+    "aiohttp>=3.13.0",
+
+    # Stripe payments
+    "stripe>=12.0.0",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.9.0",
+    "pytest>=8.3.0",
+    "pytest-asyncio>=0.25.0",
+    "httpx>=0.28.0",
+    "pre-commit>=4.0.0",
+]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "S", "UP"]
+ignore = ["S101"]  # allow assert in tests
+
+[tool.ruff.lint.per-file-ignores]
+"app/tests/**" = ["S"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["app/tests"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["app"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

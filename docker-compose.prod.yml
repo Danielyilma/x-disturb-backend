@@ -1,0 +1,27 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    image: x-disturb-backend:prod
+    container_name: x-disturb-app
+    restart: always
+    ports:
+      - "127.0.0.1:8000:8000"   # localhost-only — Nginx proxies externally
+    env_file:
+      - .env
+    environment:
+      - ENVIRONMENT=production
+    volumes:
+      - ./service-account.json:/app/service-account.json:ro   # read-only mount
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
