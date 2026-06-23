@@ -5,8 +5,14 @@ WORKDIR /app
 
 RUN pip install uv
 
-COPY pyproject.toml .
-RUN uv sync --no-dev --compile-bytecode
+# Copy BOTH pyproject.toml AND uv.lock so the build is fully reproducible.
+# Without uv.lock, uv re-resolves from the internet and may pick different versions.
+COPY pyproject.toml uv.lock ./
+
+# UV_FROZEN=1 ensures the lockfile is never modified (fails fast if out of date).
+# --link-mode=copy is required for the venv to work correctly when copied
+# across layers in a multi-stage build (hardlinks don't work across filesystems).
+RUN UV_FROZEN=1 uv sync --no-dev --compile-bytecode --link-mode=copy
 
 # ── Stage 2: runtime ────────────────────────────────────────────────────────
 FROM python:3.12-slim AS runtime

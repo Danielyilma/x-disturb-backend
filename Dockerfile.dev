@@ -2,16 +2,20 @@ FROM python:3.12-slim
 
 WORKDIR /app
 
-# Install uv
+# Install uv globally in the image
 RUN pip install uv
 
-# Copy dependency files first for layer caching
-COPY pyproject.toml .
-RUN uv sync --dev
+# Tell uv exactly where to put the venv so it's always consistent
+ENV UV_PROJECT_ENVIRONMENT=/app/.venv
+ENV PATH="/app/.venv/bin:$PATH"
 
-# Copy application code
-COPY . .
+# Copy dependency files for the entrypoint to use
+COPY pyproject.toml uv.lock ./
 
 # Dev: hot-reload enabled at runtime via CMD
 EXPOSE 8000
-CMD ["uv", "run", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+
+# Run uv sync at startup (AFTER the volume is mounted) so .venv is
+# built inside the container's Python, not shadowed by the host mount.
+# Then start uvicorn with hot-reload.
+CMD ["sh", "-c", "uv sync --dev && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"]
