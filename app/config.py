@@ -88,6 +88,14 @@ class BaseConfig(EnvironmentSettings, FirebaseSettings, JWTSettings, AfroMessage
     STRIPE_SECRET_KEY: str | None = os.environ.get("STRIPE_SECRET_KEY")
     STRIPE_WEBHOOK_SECRET: str | None = os.environ.get("STRIPE_WEBHOOK_SECRET")
 
+    # Chapa Payment Gateway
+    CHAPA_SECRET_KEY: str | None = os.environ.get("CHAPA_SECRET_KEY")
+    CHAPA_BASE_URL: str = os.environ.get("CHAPA_BASE_URL", "https://api.chapa.co/v1")
+    CHAPA_RETURN_URL: str = os.environ.get("CHAPA_RETURN_URL", "http://localhost:3000/payment/success")
+    CHAPA_WEBHOOK_SECRET: str | None = os.environ.get("CHAPA_WEBHOOK_SECRET")
+    # Firestore collection name for subscription plans
+    CHAPA_PLANS_COLLECTION: str = os.environ.get("CHAPA_PLANS_COLLECTION", "subscription_plans")
+
     # Google AI
     GOOGLE_API_KEY: str | None = os.environ.get("GOOGLE_API_KEY")
     GEMINI_MODEL_NAME: str = os.environ.get("GEMINI_MODEL_NAME", "gemini-2.0-flash")

@@ -13,7 +13,7 @@ services:
     environment:
       - ENVIRONMENT=production
     networks:
-      - x-disturb-be-network
+      - disturb-be-network
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
       interval: 30s
@@ -27,5 +27,5 @@ services:
         max-file: "5"
 
 networks:
-  x-disturb-be-network:
+  disturb-be-network:
     driver: bridge

@@ -22,8 +22,10 @@ from google.cloud.firestore_v1.async_client import AsyncClient
 
 from app.core.firebase import get_firestore_client, verify_firebase_token
 from app.core.sms import AfroMessageClient
+from app.core.chapa import ChapaClient
 from app.config import MySettings
 from app.modules.auth.repositories.otp_repository import OtpRepositoryImp
+from app.modules.payment.repositories.payment_repository import PaymentRepositoryImp
 
 logger = logging.getLogger(__name__)
 
@@ -133,3 +135,35 @@ async def get_admin_user(
 
 
 AdminUserDep = Annotated[dict[str, Any], Depends(get_admin_user)]
+
+
+# ── Chapa payment client ──────────────────────────────────────────────────────
+
+def get_chapa_client() -> ChapaClient:
+    """Return a configured ChapaClient.
+
+    Raises HTTP 503 via ChapaNotConfiguredError if CHAPA_SECRET_KEY is missing.
+    """
+    from app.modules.payment.exceptions.exceptions import ChapaNotConfiguredError
+    if not MySettings.CHAPA_SECRET_KEY:
+        raise ChapaNotConfiguredError()
+    return ChapaClient(
+        secret_key=MySettings.CHAPA_SECRET_KEY,
+        base_url=MySettings.CHAPA_BASE_URL,
+    )
+
+
+ChapaClientDep = Annotated[ChapaClient, Depends(get_chapa_client)]
+
+
+# ── Payment repository ────────────────────────────────────────────────────────
+
+async def get_payment_repo(db: FirestoreClientDep) -> PaymentRepositoryImp:
+    """Return a PaymentRepositoryImp bound to the async Firestore client."""
+    return PaymentRepositoryImp(
+        db=db,
+        plans_collection=MySettings.CHAPA_PLANS_COLLECTION,
+    )
+
+
+PaymentRepoDep = Annotated[PaymentRepositoryImp, Depends(get_payment_repo)]

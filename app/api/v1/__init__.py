@@ -8,6 +8,7 @@ from fastapi import APIRouter
 
 from app.api.v1.routers.health_routes import health_router
 from app.api.v1.routers.auth_routes import auth_router
+from app.api.v1.routers.payment_routes import payment_router
 
 api_v1_router = APIRouter(prefix="/api/v1")
 
@@ -16,6 +17,7 @@ api_v1_router.include_router(health_router)
 
 # ── Domain routes ─────────────────────────────────────────────────────────────
 api_v1_router.include_router(auth_router)
+api_v1_router.include_router(payment_router)
 # from app.api.v1.routers.user_routes import user_router
 # api_v1_router.include_router(user_router)
 #
