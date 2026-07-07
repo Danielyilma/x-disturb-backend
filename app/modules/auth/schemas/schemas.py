@@ -13,6 +13,11 @@ class SendOtpRequest(BaseModel):
 
 
 class VerifyOtpRequest(BaseModel):
+    phone: str = Field(
+        ...,
+        pattern=r"^\+[1-9]\d{1,14}$",
+        description="Phone number in E.164 format (e.g., +251911234567)",
+    )
     code: str = Field(
         ...,
         min_length=6,

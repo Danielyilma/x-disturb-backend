@@ -19,31 +19,31 @@ class OtpRepositoryImp:
         self._col = db.collection(_COLLECTION)
 
     async def save_otp(
-        self, uid: str, code: str, phone: str, expires_at: datetime
+        self, phone: str, code: str, expires_at: datetime
     ) -> dict[str, Any]:
-        """Save an OTP for the user, overwriting any existing one."""
+        """Save an OTP for the phone, overwriting any existing one."""
         data = {
             "code": code,
             "phone": phone,
             "expires_at": expires_at,
         }
-        # Use uid as document ID
-        doc_ref = self._col.document(uid)
+        # Use phone as document ID
+        doc_ref = self._col.document(phone)
         await doc_ref.set(data)
         
         snapshot = await doc_ref.get()
         return snapshot_to_dict(snapshot)
 
-    async def get_otp(self, uid: str) -> dict[str, Any] | None:
-        """Retrieve the active OTP for a user."""
-        snapshot = await self._col.document(uid).get()
+    async def get_otp(self, phone: str) -> dict[str, Any] | None:
+        """Retrieve the active OTP for a phone number."""
+        snapshot = await self._col.document(phone).get()
         if not snapshot.exists:
             return None
         return snapshot_to_dict(snapshot)
 
-    async def delete_otp(self, uid: str) -> bool:
+    async def delete_otp(self, phone: str) -> bool:
         """Delete an OTP document."""
-        doc_ref = self._col.document(uid)
+        doc_ref = self._col.document(phone)
         snapshot = await doc_ref.get()
         if not snapshot.exists:
             return False
