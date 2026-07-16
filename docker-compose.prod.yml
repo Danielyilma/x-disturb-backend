@@ -3,30 +3,26 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.prod
-      network: host
-    image: x-disturb-backend:prod
+    image: 'x-disturb-backend:prod'
     container_name: x-disturb-app
     restart: always
-    ports:
-      - "8005:8000"
+    expose:
+      - '8000'
     env_file:
       - .env
     environment:
       - ENVIRONMENT=production
-    networks:
-      - disturb-be-network
+      
+    # Python-native healthcheck. No curl required.
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health')\" || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 15s
+      
     logging:
-      driver: "json-file"
+      driver: json-file
       options:
-        max-size: "10m"
-        max-file: "5"
-
-networks:
-  disturb-be-network:
-    driver: bridge
+        max-size: 10m
+        max-file: '5'
