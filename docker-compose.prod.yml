@@ -26,3 +26,6 @@ services:
       options:
         max-size: 10m
         max-file: '5'
+
+    volumes:
+      - /data/x-disturb-backend/service-account.json:/app/service-account.json
